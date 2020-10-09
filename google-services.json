@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "695545059912",
+    "firebase_url": "https://muraro-f74aa.firebaseio.com",
+    "project_id": "muraro-f74aa",
+    "storage_bucket": "muraro-f74aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695545059912:android:aad983dcb43af9303ed67d",
+        "android_client_info": {
+          "package_name": "com.juankcba.muraro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "695545059912-9fa6ssuk3lessdn65m06od3sveg8s960.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.juankcba.muraro",
+            "certificate_hash": "918bc157ef580148256e9e1f5949ea13c4bca32f"
+          }
+        },
+        {
+          "client_id": "695545059912-2uhqfstiainaq31q9c4lhq8c6703nt1v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDmJNt4N2KgWot47_lcbcU8s5mKqhsgTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "695545059912-2uhqfstiainaq31q9c4lhq8c6703nt1v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

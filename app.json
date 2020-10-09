@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Muraro-App",
+    "slug": "Muraro-App",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "",
+    "android": {
+      "useNextNotificationsApi": true,
+      "permissions": [
+        "CAMERA_ROLL",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "googleServicesFile": "./google-services.json",
+      "package": "com.juankcba.muraro"
+    }
+  }
+}
