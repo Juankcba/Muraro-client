@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
+import { Picker } from "@react-native-community/picker";
 import Loading from "../Loading";
 import { validateEmail } from "../../utils/validations";
 import { size, isEmpty } from "lodash";
@@ -20,6 +21,30 @@ export default function RegisterForm() {
   const [showRepeatPassword, setRepeatShowPassword] = useState(false);
   const [formData, setFormData] = useState(defaultFormValue());
   const [user, setUser] = useState(false);
+  const [propiedades, setPropiedades] = useState([]);
+  const [totalPropiedades, setTotalPropiedades] = useState(0);
+  const [edificio, setEdificio] = useState("Seleccione Edificio");
+  const [ph, setPh] = useState(0);
+  const [sph, setSPH] = useState("Seleccione PH");
+
+  const [edificioKey, setEdificioKey] = useState(0);
+  console.log("PH:", ph);
+  useEffect(() => {
+    const resultPropiedades = [];
+    var size = 0;
+    db.collection("Propiedad")
+      .get()
+      .then((response) => {
+        response.forEach((doc) => {
+          const propiedad = doc.data();
+          size++;
+          propiedad.id = doc.id;
+          resultPropiedades.push(propiedad);
+        });
+        setPropiedades(resultPropiedades);
+        setTotalPropiedades(size);
+      });
+  }, []);
 
   const onSubmit = async () => {
     if (
@@ -72,98 +97,145 @@ export default function RegisterForm() {
   const onChange = (e, type) => {
     setFormData({ ...formData, [type]: e.nativeEvent.text });
   };
+
   if (user === true) {
     return <Inicio />;
   } else {
     return (
-      <View style={styles.formContainer}>
-        <Text style={styles.registro}> REGISTRO </Text>
-        <Input
-          placeholder="Nombre y Apellido"
-          keyboardType="default"
-          containerStyle={styles.inputForm}
-          placeholderTextColor="#fff"
-          inputStyle={{ color: "#419688" }}
-          onChange={(e) => onChange(e, "nombre")}
-          rightIcon={
-            <Icon
-              type="material-community"
-              name="account"
-              iconStyle={styles.iconRight}
-            />
-          }
-        />
-        <Input
-          placeholder="Correo electronico"
-          keyboardType="email-address"
-          containerStyle={styles.inputForm}
-          placeholderTextColor="#fff"
-          inputStyle={{ color: "#419688" }}
-          onChange={(e) => onChange(e, "email")}
-          rightIcon={
-            <Icon
-              type="material-community"
-              name="at"
-              iconStyle={styles.iconRight}
-            />
-          }
-        />
-        <Input
-          placeholder="Contraseña"
-          containerStyle={styles.inputForm}
-          password={true}
-          secureTextEntry={showPassword ? false : true}
-          placeholderTextColor="#fff"
-          inputStyle={{ color: "#419688" }}
-          onChange={(e) => onChange(e, "password")}
-          rightIcon={
-            <Icon
-              type="material-community"
-              name={showPassword ? "eye-off-outline" : "eye-outline"}
-              iconStyle={styles.iconRight}
-              onPress={() => setShowPassword(!showPassword)}
-            />
-          }
-        />
-        <Input
-          placeholder="Repetir Contraseña"
-          containerStyle={styles.inputForm}
-          placeholderTextColor="#fff"
-          inputStyle={{ color: "#419688" }}
-          password={true}
-          secureTextEntry={showRepeatPassword ? false : true}
-          onChange={(e) => onChange(e, "repeatPassword")}
-          rightIcon={
-            <Icon
-              type="material-community"
-              name={showRepeatPassword ? "eye-off-outline" : "eye-outline"}
-              iconStyle={styles.iconRight}
-              onPress={() => setRepeatShowPassword(!showRepeatPassword)}
-            />
-          }
-        />
-        <Input
-          placeholder="Ingrese DNI sin puntos"
-          containerStyle={styles.inputForm}
-          placeholderTextColor="#fff"
-          inputStyle={{ color: "#419688" }}
-          keyboardType="numeric"
-          onChange={(e) => onChange(e, "dni")}
-          rightIcon={{
-            type: "font-awesome",
-            name: "address-card",
-            color: "#c2c2c2",
-          }}
-        />
-        <Button
-          title="Unirse"
-          containerStyle={styles.btnContainerRegister}
-          buttonStyle={styles.btnRegister}
-          onPress={onSubmit}
-        />
+      <>
+        <View style={styles.formContainer}>
+          <Text style={styles.registro}> REGISTRO </Text>
+          <Input
+            placeholder="Nombre y Apellido"
+            keyboardType="default"
+            containerStyle={styles.inputForm}
+            placeholderTextColor="#fff"
+            inputStyle={{ color: "#419688" }}
+            onChange={(e) => onChange(e, "nombre")}
+            rightIcon={
+              <Icon
+                type="material-community"
+                name="account"
+                iconStyle={styles.iconRight}
+              />
+            }
+          />
+          <Input
+            placeholder="Correo electronico"
+            keyboardType="email-address"
+            containerStyle={styles.inputForm}
+            placeholderTextColor="#fff"
+            inputStyle={{ color: "#419688" }}
+            onChange={(e) => onChange(e, "email")}
+            rightIcon={
+              <Icon
+                type="material-community"
+                name="at"
+                iconStyle={styles.iconRight}
+              />
+            }
+          />
+          <Input
+            placeholder="Contraseña"
+            containerStyle={styles.inputForm}
+            password={true}
+            secureTextEntry={showPassword ? false : true}
+            placeholderTextColor="#fff"
+            inputStyle={{ color: "#419688" }}
+            onChange={(e) => onChange(e, "password")}
+            rightIcon={
+              <Icon
+                type="material-community"
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                iconStyle={styles.iconRight}
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            }
+          />
+          <Input
+            placeholder="Repetir Contraseña"
+            containerStyle={styles.inputForm}
+            placeholderTextColor="#fff"
+            inputStyle={{ color: "#419688" }}
+            password={true}
+            secureTextEntry={showRepeatPassword ? false : true}
+            onChange={(e) => onChange(e, "repeatPassword")}
+            rightIcon={
+              <Icon
+                type="material-community"
+                name={showRepeatPassword ? "eye-off-outline" : "eye-outline"}
+                iconStyle={styles.iconRight}
+                onPress={() => setRepeatShowPassword(!showRepeatPassword)}
+              />
+            }
+          />
+          <Input
+            placeholder="Ingrese DNI sin puntos"
+            containerStyle={styles.inputForm}
+            placeholderTextColor="#fff"
+            inputStyle={{ color: "#419688" }}
+            keyboardType="numeric"
+            onChange={(e) => onChange(e, "dni")}
+            rightIcon={{
+              type: "font-awesome",
+              name: "address-card",
+              color: "#c2c2c2",
+            }}
+          />
+          <View
+            style={{
+              borderColor: "white",
+              backgroundColor: "#1B1A16",
+              borderWidth: 1,
+              marginTop: 10,
+              width: "90%",
+            }}
+          >
+            <Picker
+              selectedValue={edificio}
+              style={{
+                height: 50,
+                width: "95%",
+                color: "white",
+              }}
+              onValueChange={(itemValue, itemIndex) => {
+                setEdificio(itemValue);
+                setEdificioKey(itemIndex - 1);
+                setPh(propiedades[itemIndex - 1].PH.length);
+              }}
+            >
+              <Picker.Item label={edificio} value={edificio} />
+              {propiedades.map((address, i) => {
+                return (
+                  <Picker.Item label={address.id} value={address.id} key={i} />
+                );
+              })}
+            </Picker>
+            <Picker
+              selectedValue={sph}
+              style={{
+                height: 50,
+                width: "95%",
+                color: "white",
+              }}
+              onValueChange={(itemValue, itemIndex) => {
+                setSPH(itemValue);
+              }}
+            >
+              <Picker.Item label={sph} value={sph} key={0} />
+            </Picker>
+          </View>
 
-        <Loading isVisible={loading} text="Creando Cuenta" />
-      </View>
+          <Button
+            title="Unirse"
+            containerStyle={styles.btnContainerRegister}
+            buttonStyle={styles.btnRegister}
+            onPress={onSubmit}
+          />
+
+          <Loading isVisible={loading} text="Creando Cuenta" />
+        </View>
+      </>
     );
   }
 }
@@ -177,6 +249,10 @@ function defaultFormValue() {
 }
 
 const styles = StyleSheet.create({
+  selectContainer: {
+    marginTop: 10,
+    backgroundColor: "#fff",
+  },
   formContainer: {
     flex: 1,
     alignItems: "center",

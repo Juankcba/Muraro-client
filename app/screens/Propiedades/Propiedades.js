@@ -12,7 +12,7 @@ export default function Propiedades(props) {
   const { navigation } = props;
   const [totalPropiedades, setTotalPropiedades] = useState(0);
   const limitEdificios = 10;
-  const [startEdificios, setStartEdificios] = useState(null);
+  const [startPropiedades, setStartPropiedades] = useState(null);
   const [propiedades, setPropiedades] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   useFocusEffect(
@@ -27,7 +27,7 @@ export default function Propiedades(props) {
             size++;
           });
 
-          setTotalPropiedades(size);
+          setStartPropiedades(size);
         });
 
       const resultPropiedades = [];
@@ -37,7 +37,7 @@ export default function Propiedades(props) {
         .limit(limitEdificios)
         .get()
         .then((response) => {
-          setStartEdificios(response.docs[response.docs.length - 1]);
+          setStartPropiedades(response.docs[response.docs.length - 1]);
 
           response.forEach((doc) => {
             const propiedad = doc.data();
@@ -55,14 +55,14 @@ export default function Propiedades(props) {
 
     propiedades.length < totalPropiedades && setIsLoading(true);
 
-    db.collection("Edificios")
+    db.collection("Propiedades")
       .orderBy("createAt", "desc")
-      .startAfter(startEdificios.data().createAt)
+      .startAfter(startPropiedades.data().createAt)
       .limit(limitEdificios)
       .get()
       .then((response) => {
         if (response.docs.length > 0) {
-          setStartEdificios(response.docs[response.docs.length - 1]);
+          setStartPropiedades(response.docs[response.docs.length - 1]);
         } else {
           setIsLoading(false);
         }

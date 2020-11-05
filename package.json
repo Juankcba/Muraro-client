@@ -61,7 +61,8 @@
     "react-native-vector-icons": "^7.1.0",
     "react-native-web": "~0.13.7",
     "sweetalert2": "^10.0.2",
-    "use-debounce": "^3.4.2"
+    "use-debounce": "^3.4.2",
+    "@react-native-community/picker": "1.6.6"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
