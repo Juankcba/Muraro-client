@@ -20,11 +20,17 @@ export default function Ventas(props) {
   const [isLoading, setIsLoading] = useState(false);
   const limitVentas = 10;
   const [mesActual, setMesActual] = useState("");
+  const [admin, setAdmin] = useState(false);
+
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((userInfo) => {
-      setUser(userInfo.uid);
-      userUID = userInfo;
-    });
+    db.collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((response) => {
+        const data = response.data();
+        setAdmin(data.isAdmin);
+      });
+
     var mesHoy = new Date().getMonth();
     switch (mesHoy) {
       case 0:
@@ -66,17 +72,31 @@ export default function Ventas(props) {
       default:
         break;
     }
-  }, []);
+  }, [admin]);
 
   useFocusEffect(
     useCallback(() => {
+      var localadmin = false;
+      db.collection("Users")
+        .doc(firebase.auth().currentUser.uid)
+        .get()
+        .then((response) => {
+          const data = response.data();
+          localadmin = data.isAdmin;
+        });
       var size = 0;
       db.collection("ventas")
         .get()
         .then((snap) => {
           snap.forEach((doc) => {
             let venta = doc.data();
-            if (venta.createBy === userUID.uid) {
+            if (localadmin === true) {
+              size++;
+            }
+            if (
+              venta.createBy === firebase.auth().currentUser.uid &&
+              localadmin === false
+            ) {
               size++;
             }
           });
@@ -97,7 +117,13 @@ export default function Ventas(props) {
             const venta = doc.data();
 
             venta.id = doc.id;
-            if (venta.createBy === userUID.uid) {
+            if (localadmin === true) {
+              resultVentas.push(venta);
+            }
+            if (
+              venta.createBy === firebase.auth().currentUser.uid &&
+              localadmin === false
+            ) {
               resultVentas.push(venta);
             }
           });
@@ -107,7 +133,14 @@ export default function Ventas(props) {
   );
   const handleLoadMore = () => {
     const resultVentas = [];
-
+    var localadmin = false;
+    db.collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((response) => {
+        const data = response.data();
+        localadmin = data.isAdmin;
+      });
     ventas.length < totalVentas && setIsLoading(true);
 
     db.collection("ventas")
@@ -125,7 +158,13 @@ export default function Ventas(props) {
         response.forEach((doc) => {
           const venta = doc.data();
           venta.id = doc.id;
-          if (venta.createBy === userUID.uid) {
+          if (localadmin === true) {
+            resultVentas.push(venta);
+          }
+          if (
+            venta.createBy === firebase.auth().currentUser.uid &&
+            localadmin === false
+          ) {
             resultVentas.push(venta);
           }
         });
@@ -133,41 +172,69 @@ export default function Ventas(props) {
         setVentas([...ventas, ...resultVentas]);
       });
   };
-
-  return (
-    <>
-      <View style={styles.viewHead}>
-        <Image
-          source={require("../../../assets/img/logo.png")}
-          resizeMode="contain"
-          style={styles.image}
-        />
-        <Text style={styles.textView}> Mis Consultas de {mesActual}</Text>
-        <View style={styles.columnaVenta}>
-          <Text style={styles.textColumVenta}>Consulta </Text>
-          <Text style={styles.textColumVenta}>Fecha</Text>
-          <Text style={styles.textColumVenta}>Titulo</Text>
-          <Text style={styles.textColumVenta}>Estado</Text>
+  if (admin === true) {
+    return (
+      <>
+        <View style={styles.viewHead}>
+          <Image
+            source={require("../../../assets/img/logo.png")}
+            resizeMode="contain"
+            style={styles.image}
+          />
+          <Text style={styles.textView}> Mis Consultas de {mesActual}</Text>
+          <View style={styles.columnaVenta}>
+            <Text style={styles.textColumVenta}>Consulta </Text>
+            <Text style={styles.textColumVenta}>Fecha</Text>
+            <Text style={styles.textColumVenta}>Titulo</Text>
+            <Text style={styles.textColumVenta}>Estado</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.viewBody}>
-        <ListVentas
-          user={user}
-          ventas={ventas}
-          handleLoadMore={handleLoadMore}
-          isLoading={isLoading}
+        <View style={styles.viewBody}>
+          <ListVentas
+            user={user}
+            ventas={ventas}
+            handleLoadMore={handleLoadMore}
+            isLoading={isLoading}
+          />
+        </View>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <View style={styles.viewHead}>
+          <Image
+            source={require("../../../assets/img/logo.png")}
+            resizeMode="contain"
+            style={styles.image}
+          />
+          <Text style={styles.textView}> Mis Consultas de {mesActual}</Text>
+          <View style={styles.columnaVenta}>
+            <Text style={styles.textColumVenta}>Consulta </Text>
+            <Text style={styles.textColumVenta}>Fecha</Text>
+            <Text style={styles.textColumVenta}>Titulo</Text>
+            <Text style={styles.textColumVenta}>Estado</Text>
+          </View>
+        </View>
+        <View style={styles.viewBody}>
+          <ListVentas
+            user={user}
+            ventas={ventas}
+            handleLoadMore={handleLoadMore}
+            isLoading={isLoading}
+          />
+        </View>
+        <Icon
+          reverse
+          type="material-community"
+          name="plus"
+          color="#419688"
+          containerStyle={styles.btnContainer}
+          onPress={() => navigation.navigate("add-venta")}
         />
-      </View>
-      <Icon
-        reverse
-        type="material-community"
-        name="plus"
-        color="#419688"
-        containerStyle={styles.btnContainer}
-        onPress={() => navigation.navigate("add-venta")}
-      />
-    </>
-  );
+      </>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -184,11 +251,11 @@ const styles = StyleSheet.create({
   },
   viewHead: {
     flex: 0,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   viewBody: {
     flex: 1,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   btnContainer: {
     position: "absolute",

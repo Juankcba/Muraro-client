@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   viewContent: {
     marginRight: 30,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
 
     flexDirection: "column",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   textView: {
     fontSize: 20,

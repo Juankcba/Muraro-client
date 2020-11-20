@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 30,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   inputForm: {
     width: "100%",

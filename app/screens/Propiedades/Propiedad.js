@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   ventaText: {
-    color: "#31B1C5",
+    color: "#231F20",
     fontSize: 20,
     marginBottom: 20,
   },
   ventaTextcont: {
-    color: "#31B1C5",
+    color: "#231F20",
     fontSize: 25,
     marginBottom: 20,
     marginLeft: 150,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   viewCard: {
     marginBottom: 20,
     borderWidth: 2,
-    borderColor: "#31B1C5",
+    borderColor: "#231F20",
     borderTopLeftRadius: 1,
     borderStyle: "solid",
   },

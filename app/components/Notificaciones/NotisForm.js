@@ -14,6 +14,7 @@ import {
   Input,
   Button,
 } from "react-native-elements";
+import { Picker } from "@react-native-community/picker";
 import { map, size, filter, isEmpty } from "lodash";
 import Toast from "react-native-simple-toast";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -34,15 +35,28 @@ export default function NotisForm(props) {
   const [notification, setNotification] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [mensaje, setmensaje] = useState("");
-
+  const [edificio, setEdificio] = useState("Seleccione Edificio");
+  const [edificioKey, setEdificioKey] = useState(0);
   return (
     <ScrollView style={styles.scrollView}>
-      <FormAdd setTitulo={setTitulo} setmensaje={setmensaje} />
+      <FormAdd
+        setTitulo={setTitulo}
+        setmensaje={setmensaje}
+        setEdificio={setEdificio}
+        setEdificioKey={setEdificioKey}
+        edificio={edificio}
+      />
       <View style={styles.btnView}>
         <Button
           icon={<Icon name="check" size={45} color="white" />}
           onPress={async () => {
-            await enviarNotificacion(expoPushToken, titulo, mensaje);
+            await enviarNotificacion(
+              expoPushToken,
+              titulo,
+              mensaje,
+              edificio,
+              edificioKey
+            );
           }}
           buttonStyle={styles.btnAddVenta}
         />
@@ -55,39 +69,81 @@ export default function NotisForm(props) {
     </ScrollView>
   );
 }
-async function enviarNotificacion(expoPushToken, titulo, mensaje) {
-  if (isEmpty(titulo) || isEmpty(mensaje)) {
+async function enviarNotificacion(
+  expoPushToken,
+  titulo,
+  mensaje,
+  edificio,
+  edificioKey
+) {
+  console.log("edificioKey", edificioKey);
+  if (isEmpty(titulo) || isEmpty(mensaje) || edificioKey == -1) {
     Toast.showWithGravity(
       "Todos los campos son obligatorios.",
       Toast.LONG,
       Toast.TOP
     );
   } else {
-    await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        host: "exp.host",
-        accept: "application/json",
-        "Content-Type": "application/json",
-        "accept-encoding": "gzip, deflate",
-      },
-      body: JSON.stringify({
-        to: "ExponentPushToken[pWjbjyIKBkxy1-lVQIxQuW]",
-        sound: "default",
-        title: "Notificacion 📬: " + titulo,
-        body: mensaje,
-        data: {
-          title: titulo,
-          message: mensaje,
-        },
-      }),
-    });
+    await db
+      .collection("Users")
+      .get()
+      .then((response) => {
+        response.forEach((doc) => {
+          const propiedad = doc.data();
+          if (propiedad.consorcioKey == edificioKey) {
+            var tokentosend = propiedad.token;
+            fetch("https://exp.host/--/api/v2/push/send", {
+              method: "POST",
+              headers: {
+                host: "exp.host",
+                accept: "application/json",
+                "Content-Type": "application/json",
+                "accept-encoding": "gzip, deflate",
+              },
+              body: JSON.stringify({
+                to: tokentosend,
+                sound: "default",
+                title: "Notificacion 📬: " + titulo,
+                body: mensaje,
+                data: {
+                  title: titulo,
+                  message: mensaje,
+                },
+              }),
+            });
+          }
+        });
+      });
   }
 }
 
 function FormAdd(props) {
-  const { setTitulo, setmensaje } = props;
+  const {
+    setTitulo,
+    setmensaje,
+    setEdificio,
+    setEdificioKey,
+    edificio,
+  } = props;
+  const [propiedades, setPropiedades] = useState([]);
+  const [totalPropiedades, setTotalPropiedades] = useState(0);
 
+  useEffect(() => {
+    const resultPropiedades = [];
+    var size = 0;
+    db.collection("Propiedad")
+      .get()
+      .then((response) => {
+        response.forEach((doc) => {
+          const propiedad = doc.data();
+          size++;
+          propiedad.id = doc.id;
+          resultPropiedades.push(propiedad);
+        });
+        setPropiedades(resultPropiedades);
+        setTotalPropiedades(size);
+      });
+  }, []);
   return (
     <View style={styles.viewForm}>
       <View style={styles.formContainer}>
@@ -110,13 +166,44 @@ function FormAdd(props) {
           onChange={(e) => setmensaje(e.nativeEvent.text)}
         />
       </View>
+      <View
+        style={{
+          borderColor: "white",
+          backgroundColor: "#1B1A16",
+          borderWidth: 1,
+          marginTop: 10,
+          marginLeft: "10%",
+          marginRight: "10%",
+          width: "80%",
+        }}
+      >
+        <Picker
+          selectedValue={edificio}
+          style={{
+            height: 50,
+            width: "95%",
+            color: "white",
+          }}
+          onValueChange={(itemValue, itemIndex) => {
+            setEdificio(itemValue);
+            setEdificioKey(itemIndex - 1);
+          }}
+        >
+          <Picker.Item label={edificio} value={edificio} />
+          {propiedades.map((address, i) => {
+            return (
+              <Picker.Item label={address.id} value={address.id} key={i} />
+            );
+          })}
+        </Picker>
+      </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
   scrollView: {
     height: "100%",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIcon: {
     marginRight: 10,

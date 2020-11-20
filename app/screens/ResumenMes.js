@@ -119,10 +119,10 @@ export default function ResumenMes() {
 const styles = StyleSheet.create({
   scrollView: {
     height: "100%",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   container: {
     flex: 0,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
 });

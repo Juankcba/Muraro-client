@@ -10,7 +10,7 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 const db = firebase.firestore(firebaseApp);
-var userUID = "";
+var userUID = "none";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -22,11 +22,20 @@ Notifications.setNotificationHandler({
 
 export default function ResumenVentas(props) {
   const { navigation } = props;
+  const [user, setUser] = useState("null");
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [edificio, setEdificio] = useState("");
   useEffect(() => {
+    db.collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((response) => {
+        const data = response.data();
+        setEdificio(data.consorcioName);
+      });
     registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
     );
@@ -59,13 +68,8 @@ export default function ResumenVentas(props) {
           resizeMode="contain"
           style={styles.image}
         />
-        <Text style={styles.viewInfo}>Ver Notificaciones {expoPushToken} </Text>
-        <Button
-          title="Press to Send Notification"
-          onPress={async () => {
-            await sendPushNotification(expoPushToken);
-          }}
-        />
+        <Text style={styles.textoIntro}>Notificaciones del Consorcio</Text>
+        <Text style={styles.textoSPAN}> {edificio}</Text>
       </View>
     </View>
   );
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   viewContent: {
     marginRight: 30,
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
 
     flexDirection: "column",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   flexRow: {
     flex: 0,
@@ -181,6 +185,7 @@ const styles = StyleSheet.create({
     marginLeft: 40,
   },
   textoSPAN: {
+    color: "white",
     textAlign: "center",
     fontSize: 30,
   },
@@ -201,7 +206,7 @@ const styles = StyleSheet.create({
   textoIntro: {
     textAlign: "center",
     color: "#419688",
-    fontSize: 30,
+    fontSize: 15,
     marginTop: 20,
   },
   btnContainer: {

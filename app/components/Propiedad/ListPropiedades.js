@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   separador: {
     height: 3,
     width: "100 %",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIcon: {
     alignItems: "center",
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   viewFull: {
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   loaderVentas: {
     marginTop: 10,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5,
     borderBottomColor: "#419688",
     flexDirection: "row",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
     margin: 10,
   },
   viewVentaImage: {

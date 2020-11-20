@@ -30,7 +30,7 @@ export default function Notificaciones(props) {
           navigation={navigation}
         />
         <Toast ref={toastRef} positcion="center" opacity={0.9} />
-        <Loading isVisible={isLoading} text="Crando Venta" />
+        <Loading isVisible={isLoading} text="Creando Notificacion" />
       </View>
     </View>
   );

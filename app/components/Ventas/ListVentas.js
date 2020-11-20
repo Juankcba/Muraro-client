@@ -12,7 +12,11 @@ import {
 import { Icon } from "react-native-elements";
 import { size } from "lodash";
 import { useNavigation } from "@react-navigation/native";
+import { firebaseApp } from "../../utils/firebase";
 
+import firebase from "firebase/app";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 export default function ListVentas(props) {
   const { ventas, handleLoadMore, isLoading, user } = props;
 
@@ -80,7 +84,7 @@ export default function ListVentas(props) {
       ) : (
         <View style={styles.loaderVentas}>
           <ActivityIndicator size="large" />
-          <Text style={styles.textColor}>Ingrese Una Consulta</Text>
+          <Text style={styles.textColor}>No Tiene Consultas</Text>
         </View>
       )}
     </View>
@@ -98,15 +102,52 @@ function Venta(props) {
     isVisible,
     ventasNotas,
     createAt,
+    name,
+    edificio,
   } = venta.item;
   const imageVenta = images ? images[0] : null;
 
-  const goVenta = () => {};
+  const goVenta = () => {
+    db.collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((response) => {
+        const data = response.data();
+        if (data.isAdmin === true) {
+          navigation.navigate("VentaPreview", {
+            id,
+            ventaTitulo,
+            ventaOrden,
+            isVisible,
+            ventasNotas,
+            name,
+            edificio,
+          });
+        }
+      });
+  };
   var mesHoy = new Date().getMonth();
   var fecha = createAt.seconds;
   var mes = new Date(fecha * 1000).getMonth();
   var dia = new Date(fecha * 1000).getDate() - 1;
   var textDia = dia + "/" + (mes + 1);
+  if (isVisible === 0) {
+    var nameIcon = "exclamation-circle";
+    var colorIcon = "red";
+  }
+  if (isVisible === 1) {
+    var nameIcon = "info-circle";
+    var colorIcon = "blue";
+  }
+  if (isVisible === 2) {
+    var nameIcon = "cogs";
+    var colorIcon = "yellow";
+  }
+  if (isVisible === 3) {
+    var nameIcon = "check";
+    var colorIcon = "white";
+  }
+
   return (
     <TouchableOpacity onPress={goVenta}>
       <View style={styles.viewVenta}>
@@ -114,22 +155,13 @@ function Venta(props) {
           <Text style={styles.textColumVenta}>{ventaOrden}</Text>
           <Text style={styles.textColumVenta}> {textDia} </Text>
           <Text style={styles.textColumVenta}>{ventaTitulo}</Text>
-          {isVisible ? (
-            <Icon
-              type="fontawesome"
-              name="check-circle"
-              color="green"
-              containerStyle={styles.containerIcon}
-            />
-          ) : (
-            <Icon
-              type="material-community"
-              name="alert-circle-outline"
-              color="red"
-              backgroundColor="#1B1A16"
-              containerStyle={styles.containerIconFalse}
-            />
-          )}
+
+          <Icon
+            type="font-awesome"
+            name={nameIcon}
+            color={colorIcon}
+            containerStyle={styles.containerIcon}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -169,7 +201,7 @@ const styles = StyleSheet.create({
   separador: {
     height: 3,
     width: "100 %",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIcon: {
     alignItems: "center",
@@ -179,7 +211,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
 
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIconFalse: {
     alignItems: "center",
@@ -189,7 +221,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
 
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   columnaVenta: {
     flex: 0,
@@ -209,7 +241,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   viewFull: {
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   loaderVentas: {
     marginTop: 10,
@@ -220,7 +252,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5,
     borderBottomColor: "#419688",
     flexDirection: "row",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
     margin: 10,
   },
   viewVentaImage: {

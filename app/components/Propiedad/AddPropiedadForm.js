@@ -178,7 +178,7 @@ function FormAdd(props) {
 const styles = StyleSheet.create({
   scrollView: {
     height: "100%",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIcon: {
     marginRight: 10,

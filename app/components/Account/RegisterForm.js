@@ -9,6 +9,7 @@ import Inicio from "../../screens/Login/Inicio";
 import { useNavigation } from "@react-navigation/native";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
+import Toast from "react-native-simple-toast";
 import "firebase/storage";
 import "firebase/firestore";
 const db = firebase.firestore(firebaseApp);
@@ -24,11 +25,8 @@ export default function RegisterForm() {
   const [propiedades, setPropiedades] = useState([]);
   const [totalPropiedades, setTotalPropiedades] = useState(0);
   const [edificio, setEdificio] = useState("Seleccione Edificio");
-  const [ph, setPh] = useState(0);
-  const [sph, setSPH] = useState("Seleccione PH");
-
   const [edificioKey, setEdificioKey] = useState(0);
-  console.log("PH:", ph);
+
   useEffect(() => {
     const resultPropiedades = [];
     var size = 0;
@@ -52,18 +50,35 @@ export default function RegisterForm() {
       isEmpty(formData.email) ||
       isEmpty(formData.password) ||
       isEmpty(formData.repeatPassword) ||
-      isEmpty(formData.dni)
+      isEmpty(formData.dni) ||
+      edificioKey == -1
     ) {
-      //toastRef.current.show("Todos los campos son obligatorios");
+      Toast.showWithGravity(
+        "Todos los campos son obligatorios.",
+        Toast.LONG,
+        Toast.TOP
+      );
     } else {
       if (!formData.nombre) {
-        //  toastRef.current.show("Email no es Correcto");
+        Toast.showWithGravity(
+          "El Nombre no es correcto.",
+          Toast.LONG,
+          Toast.TOP
+        );
       } else if (!validateEmail(formData.email)) {
-        //  toastRef.current.show("Email no es Correcto");
+        Toast.showWithGravity("Email no es Correcto.", Toast.LONG, Toast.TOP);
       } else if (formData.password !== formData.repeatPassword) {
-        //toastRef.current.show("Las contraseñas tiene que ser iguales");
+        Toast.showWithGravity(
+          "Las contraseñas tiene que ser iguales.",
+          Toast.LONG,
+          Toast.TOP
+        );
       } else if (size(formData.password) < 6) {
-        //toastRef.current.show("La contraseña tiene que tener al menos 6 caracteres");
+        Toast.showWithGravity(
+          "La contraseña tiene que tener al menos 6 caracteres.",
+          Toast.LONG,
+          Toast.TOP
+        );
       } else {
         setLoading(true);
 
@@ -79,6 +94,8 @@ export default function RegisterForm() {
                 dni: formData.dni,
                 uid: firebase.auth().currentUser.uid,
                 isAdmin: false,
+                consorcioKey: edificioKey,
+                consorcioName: edificio,
               })
               .then(() => {
                 console.log("User added!");
@@ -201,7 +218,6 @@ export default function RegisterForm() {
               onValueChange={(itemValue, itemIndex) => {
                 setEdificio(itemValue);
                 setEdificioKey(itemIndex - 1);
-                setPh(propiedades[itemIndex - 1].PH.length);
               }}
             >
               <Picker.Item label={edificio} value={edificio} />
@@ -211,23 +227,10 @@ export default function RegisterForm() {
                 );
               })}
             </Picker>
-            <Picker
-              selectedValue={sph}
-              style={{
-                height: 50,
-                width: "95%",
-                color: "white",
-              }}
-              onValueChange={(itemValue, itemIndex) => {
-                setSPH(itemValue);
-              }}
-            >
-              <Picker.Item label={sph} value={sph} key={0} />
-            </Picker>
           </View>
 
           <Button
-            title="Unirse"
+            title="Registrarse"
             containerStyle={styles.btnContainerRegister}
             buttonStyle={styles.btnRegister}
             onPress={onSubmit}

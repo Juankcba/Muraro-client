@@ -42,6 +42,9 @@ export default function AddVentaForm(props) {
   const [imagesSelected, setImagesSelected] = useState([]);
   const [ventaOrden, setVentaOrden] = useState("");
   const [tokenAdmin, setTokenAdmin] = useState("");
+  const [name, setName] = useState("");
+  const [edificio, setEdificio] = useState("");
+
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
       setUser(userInfo);
@@ -52,6 +55,13 @@ export default function AddVentaForm(props) {
       .get()
       .then((response) => {
         setVentaOrden(response.data().ventasCount);
+        db.collection("Users")
+          .doc(ventaUserID)
+          .get()
+          .then((response) => {
+            setName(response.data().name);
+            setEdificio(response.data().consorcioName);
+          });
       })
       .catch(() => {
         setVentaOrden(0);
@@ -82,13 +92,44 @@ export default function AddVentaForm(props) {
         ventaOrden: ventaOrden + 1,
         ventaTitulo: ventaTitulo,
         ventasNotas: ventasNotas,
-        isVisible: false,
+        isVisible: 0,
         createAt: new Date(),
         createBy: ventaUserID,
+        name: name,
+        edificio: edificio,
       });
       batch.commit();
       const noti = async () => {
-        sendPushNotification(tokenAdmin);
+        await db
+          .collection("Users")
+          .get()
+          .then((response) => {
+            response.forEach((doc) => {
+              const propiedad = doc.data();
+              if (propiedad.isAdmin == true) {
+                var tokentosend = propiedad.token;
+                fetch("https://exp.host/--/api/v2/push/send", {
+                  method: "POST",
+                  headers: {
+                    host: "exp.host",
+                    accept: "application/json",
+                    "Content-Type": "application/json",
+                    "accept-encoding": "gzip, deflate",
+                  },
+                  body: JSON.stringify({
+                    to: tokentosend,
+                    sound: "default",
+                    title: "Nueva Consulta 🔥: " + titulo,
+                    body: mensaje,
+                    data: {
+                      title: titulo,
+                      message: mensaje,
+                    },
+                  }),
+                });
+              }
+            });
+          });
       };
       console.log(noti);
       setIsLoading(false);
@@ -248,7 +289,7 @@ function UploadImage(props) {
 const styles = StyleSheet.create({
   scrollView: {
     height: "100%",
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   containerIcon: {
     marginRight: 10,

@@ -164,7 +164,7 @@ export default function Account() {
 const styles = StyleSheet.create({
   fullBody: {
     flex: 1,
-    backgroundColor: "#1B1A16",
+    backgroundColor: "#231F20",
   },
   btn: {
     backgroundColor: "#419688",
